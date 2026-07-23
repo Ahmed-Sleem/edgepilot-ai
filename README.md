@@ -22,7 +22,7 @@ It turns that question into **recorded benchmarks**, a clear **comparison view**
 
 ---
 
-## Who it’s for
+## Who it's for
 
 - AI learners and course projects  
 - Robotics and embedded labs  
@@ -35,7 +35,7 @@ It turns that question into **recorded benchmarks**, a clear **comparison view**
 
 | Capability | What you get |
 |------------|----------------|
-| **Workload wizard** | Describe the AI task you’re evaluating |
+| **Workload wizard** | Describe the AI task you're evaluating |
 | **Device profiles** | Capture CPU, RAM, GPU, storage, and related limits |
 | **Provider catalog** | Work with local and cloud options (e.g. Ollama, Gemini, Groq) |
 | **Benchmark runs** | Run or record performance measurements |

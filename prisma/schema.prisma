@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workloads  Workload[]
+  devices    Device[]
+  benchmarks Benchmark[]
+}
+
+model Workload {
+  id           String   @id @default(uuid())
+  taskType     String   @map("task_type")
+  inputFormat  String   @map("input_format")
+  outputFormat String   @map("output_format")
+  constraints  Json     @default("{}")
+  userId       String   @map("user_id")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id])
+  benchmarks Benchmark[]
+
+  @@map("workloads")
+}
+
+model Device {
+  id        String   @id @default(uuid())
+  name      String
+  cpu       String
+  ramGb     Int      @map("ram_gb")
+  gpu       String?
+  storageGb Int      @map("storage_gb")
+  network   String?
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id])
+  benchmarks Benchmark[]
+
+  @@map("devices")
+}
+
+model Provider {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  type      String
+  baseUrl   String?  @map("base_url")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now())
+
+  benchmarks Benchmark[]
+
+  @@map("providers")
+}
+
+model Benchmark {
+  id             String    @id @default(uuid())
+  workloadId     String    @map("workload_id")
+  deviceId       String    @map("device_id")
+  providerId     String    @map("provider_id")
+  model          String
+  prompt         String
+  iterations     Int       @default(1)
+  status         String    @default("pending")
+  userId         String    @map("user_id")
+  createdAt      DateTime  @default(now())
+  completedAt    DateTime? @map("completed_at")
+
+  workload  Workload         @relation(fields: [workloadId], references: [id])
+  device    Device           @relation(fields: [deviceId], references: [id])
+  provider  Provider         @relation(fields: [providerId], references: [id])
+  user      User             @relation(fields: [userId], references: [id])
+  results   BenchmarkResult[]
+  readiness ReadinessScore?
+
+  @@map("benchmarks")
+}
+
+model BenchmarkResult {
+  id              String   @id @default(uuid())
+  benchmarkId     String   @map("benchmark_id")
+  iteration       Int
+  latencyMs       Float    @map("latency_ms")
+  tokensPerSecond Float?   @map("tokens_per_second")
+  ttftMs          Float?   @map("ttft_ms")
+  success         Boolean  @default(true)
+  errorMessage    String?  @map("error_message")
+  createdAt       DateTime @default(now())
+
+  benchmark Benchmark @relation(fields: [benchmarkId], references: [id])
+
+  @@map("benchmark_results")
+}
+
+model ReadinessScore {
+  id               String   @id @default(uuid())
+  benchmarkId      String   @unique @map("benchmark_id")
+  hardwareFit      Int      @map("hardware_fit")
+  latencyScore     Int      @map("latency_score")
+  privacyScore     Int      @map("privacy_score")
+  costScore        Int      @map("cost_score")
+  reliabilityScore Int      @map("reliability_score")
+  overallReadiness Int      @map("overall_readiness")
+  recommendation   String
+  evidence         Json     @default("[]")
+  limitations      Json     @default("[]")
+  createdAt        DateTime @default(now())
+
+  benchmark Benchmark @relation(fields: [benchmarkId], references: [id])
+
+  @@map("readiness_scores")
+}
+
+model RateLimit {
+  id         String   @id @default(uuid())
+  identifier String
+  timestamp  DateTime @default(now())
+
+  @@index([identifier, timestamp])
+  @@map("rate_limits")
+}
