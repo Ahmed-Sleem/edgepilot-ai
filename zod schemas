@@ -1,0 +1,20 @@
+import { z } from 'zod';
+export const DeviceProfileSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  architecture: z.string(),
+  ram_gb: z.number().optional(),
+  vcpu: z.number().optional(),
+  gpu: z.string().optional(),
+  tier: z.enum(['edge', 'local', 'cloud']),
+});
+export const BenchmarkTaskSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  modality: z.enum(['text', 'code', 'vision']),
+  complexity: z.enum(['low', 'medium', 'high']),
+  description: z.string(),
+});
+
+export type DeviceProfile = z.infer<typeof DeviceProfileSchema>;
+export type BenchmarkTask = z.infer<typeof BenchmarkTaskSchema>;
