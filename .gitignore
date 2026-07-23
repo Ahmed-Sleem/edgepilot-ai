@@ -50,3 +50,7 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# Local vision benchmark dataset
+/datasets/vision-benchmark/
+/datasets/vision-benchmark.scaffold-backup-*/
