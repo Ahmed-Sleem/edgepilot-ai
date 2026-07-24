@@ -8,40 +8,15 @@ export const VISION_LABELS = [
   'safety_cone',
 ] as const;
 
-export const VISION_WORKLOAD_ID =
-  'construction-component-recognition-v1' as const;
-
-export const VISION_DATASET_ID =
-  'edgepilot-synthetic-construction-components-v1' as const;
-
 export type VisionLabel = (typeof VISION_LABELS)[number];
-export type VisionProviderKind = 'local' | 'cloud';
-export type VisionExecutionMode = 'controlled' | 'live';
 
 export interface VisionBenchmarkSample {
   id: string;
   imagePath: string;
   expectedLabel: VisionLabel;
-  sourceId: string;
-  licenseSpdx: 'MIT';
   licenseVerified: boolean;
   privacyReviewed: boolean;
-  containsPeople: boolean;
-  containsFaces: boolean;
-  containsPersonalData: boolean;
-  exifPresent: boolean;
   sha256: string;
-}
-
-export interface PreparedVisionImage {
-  data: Uint8Array;
-  mimeType: 'image/png';
-  width: number;
-  height: number;
-  sourceBytes: number;
-  processedBytes: number;
-  sourceSha256: string;
-  processedSha256: string;
 }
 
 export interface VisionProviderResponse {
@@ -58,7 +33,7 @@ export interface VisionPredictionRecord {
   normalizedLabel: VisionLabel | null;
   latencyMs: number;
   providerSuccess: boolean;
-  errorCategory: 'provider_error' | 'invalid_output' | null;
+  errorCategory: string | null;
 }
 
 export interface ClassMetrics {
@@ -96,16 +71,12 @@ export interface VisionBenchmarkThresholds {
 
 export interface VisionBenchmarkEvidence {
   schemaVersion: '1.0.0';
-  workloadId: typeof VISION_WORKLOAD_ID;
+  workloadId: 'construction-component-recognition-v1';
   workloadVersion: string;
-  datasetId: typeof VISION_DATASET_ID;
   manifestVersion: string;
   manifestSha256: string;
-  preprocessingVersion: string;
   promptVersion: string;
-  executionMode: VisionExecutionMode;
   provider: string;
-  providerKind: VisionProviderKind;
   model: string;
   deviceProfileId: string;
   gitCommitSha: string;
@@ -120,14 +91,10 @@ export interface VisionBenchmarkEvidence {
 
 export interface VisionBenchmarkEvaluationInput {
   workloadVersion: string;
-  datasetId: typeof VISION_DATASET_ID;
   manifestVersion: string;
   manifestSha256: string;
-  preprocessingVersion: string;
   promptVersion: string;
-  executionMode: VisionExecutionMode;
   provider: string;
-  providerKind: VisionProviderKind;
   model: string;
   deviceProfileId: string;
   gitCommitSha: string;
@@ -137,23 +104,4 @@ export interface VisionBenchmarkEvaluationInput {
   responses: VisionProviderResponse[];
   thresholds?: Partial<VisionBenchmarkThresholds>;
   limitations?: string[];
-}
-
-export interface VisionDashboardRow {
-  workloadId: typeof VISION_WORKLOAD_ID;
-  datasetId: typeof VISION_DATASET_ID;
-  provider: string;
-  providerKind: VisionProviderKind;
-  model: string;
-  executionMode: VisionExecutionMode;
-  sampleCount: number;
-  accuracy: number;
-  macroF1: number;
-  invalidOutputRate: number;
-  successfulRequestRate: number;
-  medianLatencyMs: number;
-  p95LatencyMs: number;
-  throughputSamplesPerSecond: number;
-  passed: boolean;
-  completedAt: string;
 }

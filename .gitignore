@@ -51,9 +51,6 @@ Thumbs.db
 tmp/
 temp/
 
-# Generated vision benchmark images
-/datasets/vision-benchmark/images/
+# Local vision benchmark dataset
+/datasets/vision-benchmark/
 /datasets/vision-benchmark.scaffold-backup-*/
-
-# Generated live benchmark evidence
-/evidence/vision-benchmark/live-*.json

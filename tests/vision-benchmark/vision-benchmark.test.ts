@@ -3,8 +3,6 @@ import { calculateVisionMetrics } from '../../src/modules/vision-benchmark/core/
 import { normalizeVisionLabel } from '../../src/modules/vision-benchmark/core/normalization';
 import { VisionDatasetManifestSchema } from '../../src/modules/vision-benchmark/core/schemas';
 import {
-  VISION_DATASET_ID,
-  VISION_LABELS,
   VisionBenchmarkEvaluationInput,
   VisionBenchmarkSample,
   VisionPredictionRecord,
@@ -20,43 +18,22 @@ function createSample(
     id,
     imagePath: `datasets/vision-benchmark/images/${id}.png`,
     expectedLabel,
-    sourceId: `synthetic-${expectedLabel}-v1`,
-    licenseSpdx: 'MIT',
     licenseVerified: true,
     privacyReviewed: true,
-    containsPeople: false,
-    containsFaces: false,
-    containsPersonalData: false,
-    exifPresent: false,
     sha256: VALID_SHA,
   };
-}
-
-function createManifestSamples(): VisionBenchmarkSample[] {
-  return VISION_LABELS.flatMap((label) =>
-    [1, 2, 3].map((index) =>
-      createSample(
-        `${label}-${String(index).padStart(2, '0')}`,
-        label
-      )
-    )
-  );
 }
 
 function createEvaluationInput(): VisionBenchmarkEvaluationInput {
   return {
     workloadVersion: '1.0.0',
-    datasetId: VISION_DATASET_ID,
     manifestVersion: '1.0.0',
     manifestSha256: 'b'.repeat(64),
-    preprocessingVersion: 'test-processor-v1',
     promptVersion: '1.0.0',
-    executionMode: 'controlled',
     provider: 'test-provider',
-    providerKind: 'local',
     model: 'test-model',
     deviceProfileId: 'test-device',
-    gitCommitSha: '0cd3930',
+    gitCommitSha: 'test-commit',
     startedAt: '2026-07-23T12:00:00.000Z',
     completedAt: '2026-07-23T12:00:01.000Z',
     samples: [createSample('sample-001')],
@@ -117,25 +94,10 @@ describe('vision label normalization', () => {
 describe('vision dataset manifest validation', () => {
   const baseManifest = {
     schemaVersion: '1.0.0',
-    datasetId: VISION_DATASET_ID,
+    datasetId: 'fixture-dataset',
     workloadId: 'construction-component-recognition-v1',
     manifestVersion: '1.0.0',
     status: 'ready',
-    title: 'Fixture dataset',
-    description: 'Deterministic test fixtures.',
-    source: {
-      type: 'project_generated_synthetic',
-      generator:
-        'scripts/vision-benchmark/generate-fixtures.mjs',
-      repository: 'https://github.com/Ahmed-Sleem/edgepilot-ai',
-      createdBy: 'EdgePilot AI contributors',
-    },
-    license: {
-      spdxId: 'MIT',
-      file: 'LICENSE',
-      redistributionAllowed: true,
-      commercialUseAllowed: true,
-    },
     labels: [
       'hardhat',
       'safety_vest',
@@ -152,15 +114,8 @@ describe('vision dataset manifest validation', () => {
       locationMetadataAllowed: false,
       exifMustBeRemoved: true,
       manualReviewRequired: true,
-      manualReviewCompleted: true,
     },
-    generation: {
-      width: 256,
-      height: 256,
-      samplesPerLabel: 3,
-      deterministic: true,
-    },
-    samples: createManifestSamples(),
+    samples: [createSample('sample-001')],
   };
 
   test('accepts a valid ready manifest', () => {
@@ -195,10 +150,9 @@ describe('vision dataset manifest validation', () => {
       ...baseManifest,
       samples: [
         {
-          ...baseManifest.samples[0],
+          ...createSample('sample-001'),
           licenseVerified: false,
         },
-        ...baseManifest.samples.slice(1),
       ],
     });
 

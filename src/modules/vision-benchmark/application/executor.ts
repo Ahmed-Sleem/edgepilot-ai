@@ -1,12 +1,6 @@
 import { evaluateVisionBenchmark } from './evaluator';
+import { VisionProvider } from './provider';
 import {
-  VisionImageProcessor,
-  VisionProvider,
-} from './provider';
-import {
-  VISION_DATASET_ID,
-  PreparedVisionImage,
-  VisionExecutionMode,
   VisionBenchmarkEvidence,
   VisionBenchmarkSample,
   VisionBenchmarkThresholds,
@@ -20,14 +14,12 @@ export interface VisionBenchmarkClock {
 
 export interface ExecuteVisionBenchmarkInput {
   provider: VisionProvider;
-  imageProcessor: VisionImageProcessor;
   samples: VisionBenchmarkSample[];
   workloadVersion: string;
   manifestVersion: string;
   manifestSha256: string;
   promptVersion: string;
   prompt: string;
-  executionMode: VisionExecutionMode;
   deviceProfileId: string;
   gitCommitSha: string;
   thresholds?: Partial<VisionBenchmarkThresholds>;
@@ -61,7 +53,6 @@ function normalizeLatency(
 async function classifySample(
   provider: VisionProvider,
   sample: VisionBenchmarkSample,
-  image: PreparedVisionImage,
   prompt: string,
   clock: VisionBenchmarkClock
 ): Promise<VisionProviderResponse> {
@@ -70,7 +61,6 @@ async function classifySample(
   try {
     const response = await provider.classify({
       sample,
-      image,
       prompt,
     });
 
@@ -118,13 +108,10 @@ export async function executeVisionBenchmark(
   const responses: VisionProviderResponse[] = [];
 
   for (const sample of input.samples) {
-    const image = await input.imageProcessor.prepare(sample);
-
     responses.push(
       await classifySample(
         input.provider,
         sample,
-        image,
         input.prompt,
         clock
       )
@@ -135,14 +122,10 @@ export async function executeVisionBenchmark(
 
   return evaluateVisionBenchmark({
     workloadVersion: input.workloadVersion,
-    datasetId: VISION_DATASET_ID,
     manifestVersion: input.manifestVersion,
     manifestSha256: input.manifestSha256,
-    preprocessingVersion: input.imageProcessor.version,
     promptVersion: input.promptVersion,
-    executionMode: input.executionMode,
     provider: input.provider.providerName,
-    providerKind: input.provider.kind,
     model: input.provider.modelName,
     deviceProfileId: input.deviceProfileId,
     gitCommitSha: input.gitCommitSha,

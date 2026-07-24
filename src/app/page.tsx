@@ -7,16 +7,16 @@ export default function Home() {
       </p>
       <div className="flex gap-4">
         <a
-          href="/vision-benchmark"
+          href="/dashboard"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Vision Dashboard
+          Dashboard
         </a>
         <a
-          href="/api/v1/vision-benchmarks"
+          href="/benchmark"
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         >
-          Evidence API
+          Run Benchmark
         </a>
       </div>
     </main>

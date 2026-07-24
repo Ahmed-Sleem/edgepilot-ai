@@ -4,10 +4,12 @@
 
 `construction-component-recognition-v1`
 
-This bounded workload evaluates closed-set recognition of one primary
-construction-safety component per image. It is an image-classification
-workload, not an object-detection workload. Version 1 does not request
-bounding boxes, segmentation masks, tracking, or multi-object scene analysis.
+This workload evaluates closed-set recognition of one primary
+construction-safety component per image.
+
+It is an image-classification workload, not an object-detection workload.
+Version 1 does not request bounding boxes, segmentation masks, tracking, or
+multi-object scene analysis.
 
 ## Supported labels
 
@@ -18,33 +20,6 @@ bounding boxes, segmentation masks, tracking, or multi-object scene analysis.
 - `mask`
 - `ladder`
 - `safety_cone`
-
-## Dataset boundary
-
-The controlled dataset contains 21 deterministic synthetic PNG files: three
-for each supported label. The generator, manifest, license, privacy review,
-and SHA-256 values are documented in
-[`dataset-card.md`](dataset-card.md).
-
-The controlled dataset validates the benchmark system. It is not representative
-of real construction sites and cannot support production-accuracy claims.
-
-## Image preprocessing
-
-Before provider execution, the module:
-
-1. Resolves each image beneath the repository root.
-2. Rejects symbolic links and path traversal.
-3. Enforces a 10 MiB source limit and safe pixel limits.
-4. Verifies the source SHA-256 against the manifest.
-5. Accepts PNG, JPEG, and WebP single-frame images.
-6. Rejects EXIF, XMP, and IPTC metadata.
-7. Applies EXIF-aware orientation handling.
-8. Resizes within 512 × 512 without enlargement.
-9. Converts to PNG while stripping metadata.
-
-Sharp removes metadata by default when producing output buffers:
-[Sharp output documentation](https://sharp.pixelplumbing.com/api-output/).
 
 ## Response policy
 
@@ -63,7 +38,7 @@ Normalization:
 Invalid output is measured separately and is never treated as a ground-truth
 class.
 
-## Deterministic metrics
+## Metrics
 
 The module calculates:
 
@@ -78,49 +53,41 @@ The module calculates:
 - P95 latency using nearest rank.
 - Sequential throughput.
 
-Macro metrics include classes represented in the evaluated ground truth. The
-ready manifest guarantees all seven classes are represented.
+Macro metrics include classes represented in the evaluated ground truth.
+Final dataset evidence must contain all seven supported classes.
 
-## Quality thresholds
+## Initial thresholds
 
 - Accuracy greater than or equal to `0.80`.
 - Macro F1 greater than or equal to `0.75`.
 - Invalid-output rate less than or equal to `0.05`.
 - Successful-request rate greater than or equal to `0.95`.
 
-## Provider execution
+## Integration boundary
 
-The image-capable `VisionProvider` port is separate from the shared text-only
-provider port.
+The current shared `AIProvider` port accepts text prompts only. The vision
+benchmark therefore exposes provider-neutral evaluation contracts without
+changing the shared port.
 
-- `OllamaVisionProvider` calls the local `/api/chat` endpoint with base64 image
-  data, streaming disabled, temperature `0`, and seed `42`.
-- `GeminiVisionProvider` calls the HTTPS Interactions API with inline PNG data,
-  a label-enum response schema, and minimal thinking.
-- `executeVisionBenchmark` processes samples sequentially, preserves sample
-  order, records failures, and produces schema-validated evidence.
+The provider team can later implement an image-capable adapter and translate its
+responses into `VisionProviderResponse`.
 
-Ollama documents image arrays for vision models in its
-[Vision guide](https://docs.ollama.com/capabilities/vision). Gemini documents
-inline image data, classification, supported formats, and the Interactions API
-in its
-[Image understanding guide](https://ai.google.dev/gemini-api/docs/image-understanding).
+The generated `VisionBenchmarkEvidence` object is the dashboard integration
+contract for version 1.
+## Execution boundary validation
 
-## Evidence boundary
+The module defines an image-capable `VisionProvider` contract independently of
+the shared text-only provider contract.
 
-Every evidence file records:
+`executeVisionBenchmark` sends samples to the selected provider sequentially,
+preserves sample order, converts thrown provider errors into structured failure
+responses, and produces `VisionBenchmarkEvidence` through the deterministic
+evaluator.
 
-- Workload, dataset, manifest, preprocessing, and prompt versions.
-- Manifest SHA-256.
-- Controlled or live execution mode.
-- Provider kind, provider, model, device profile, and commit SHA.
-- Per-sample predictions and latency.
-- Aggregate and per-class metrics.
-- Thresholds, pass/fail status, and limitations.
+The automated local and cloud execution tests use deterministic fake providers.
+They validate the provider boundary and execution flow only. They do not prove
+connectivity, authentication, model availability, image encoding, or output
+quality for real Ollama, Gemini, or other production providers.
 
-Controlled evidence proves deterministic local/cloud integration without
-claiming real provider performance. Live evidence is created only when the
-Ollama or Gemini command actually executes.
-
-The dashboard receives a reduced, validated comparison row derived from the
-full evidence object.
+A real local-provider test and a real cloud-provider test remain blocked until
+the provider adapters from the provider feature are available.
