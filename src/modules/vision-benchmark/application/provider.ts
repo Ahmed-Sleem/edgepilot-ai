@@ -1,13 +1,20 @@
 import {
+  PreparedVisionImage,
   VisionBenchmarkSample,
+  VisionProviderKind,
   VisionProviderResponse,
 } from '../core/types';
 
-export type VisionProviderKind = 'local' | 'cloud';
-
 export interface VisionProviderRequest {
   sample: VisionBenchmarkSample;
+  image: PreparedVisionImage;
   prompt: string;
+}
+
+export interface VisionImageProcessor {
+  readonly version: string;
+
+  prepare(sample: VisionBenchmarkSample): Promise<PreparedVisionImage>;
 }
 
 export interface VisionProvider {

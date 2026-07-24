@@ -1,5 +1,6 @@
 import { normalizeVisionLabel } from '../core/normalization';
 import { calculateVisionMetrics } from '../core/metrics';
+import { VisionBenchmarkEvidenceSchema } from '../core/schemas';
 import {
   VisionBenchmarkEvaluationInput,
   VisionBenchmarkEvidence,
@@ -66,7 +67,7 @@ function validateEvaluationInput(
 function classifyError(
   success: boolean,
   normalizedLabel: string | null
-): string | null {
+): 'provider_error' | 'invalid_output' | null {
   if (!success) {
     return 'provider_error';
   }
@@ -121,14 +122,18 @@ export function evaluateVisionBenchmark(
     metrics.successfulRequestRate >=
       thresholds.minimumSuccessfulRequestRate;
 
-  return {
+  const evidence: VisionBenchmarkEvidence = {
     schemaVersion: '1.0.0',
     workloadId: 'construction-component-recognition-v1',
     workloadVersion: input.workloadVersion,
+    datasetId: input.datasetId,
     manifestVersion: input.manifestVersion,
     manifestSha256: input.manifestSha256,
+    preprocessingVersion: input.preprocessingVersion,
     promptVersion: input.promptVersion,
+    executionMode: input.executionMode,
     provider: input.provider,
+    providerKind: input.providerKind,
     model: input.model,
     deviceProfileId: input.deviceProfileId,
     gitCommitSha: input.gitCommitSha,
@@ -140,4 +145,6 @@ export function evaluateVisionBenchmark(
     passed,
     limitations: input.limitations ?? [],
   };
+
+  return VisionBenchmarkEvidenceSchema.parse(evidence);
 }
