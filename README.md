@@ -45,8 +45,25 @@ It turns that question into **recorded benchmarks**, a clear **comparison view**
 
 ### Built-in decision tools
 
-- **`readiness_score()`** — combines hardware fit, latency, privacy, cost, and reliability into a deployment-oriented score  
-- **`compare_benchmarks()`** — ranks options using **measured or recorded** results only  
+- **`readiness_score()`** — combines hardware fit, latency, privacy, cost, and reliability into a deployment-oriented score
+- **`compare_benchmarks()`** — ranks options using **measured or recorded** results only
+
+### Computer Vision Benchmark
+
+The vision module provides a bounded construction-component classification
+workload with:
+
+- A reproducible 21-image synthetic fixture dataset.
+- Source, license, privacy, and SHA-256 manifest checks.
+- Safe Sharp image preprocessing.
+- Ollama and Gemini vision adapters.
+- Deterministic quality and latency metrics.
+- Validated JSON evidence and a comparison page.
+- 48 documented automated cases.
+
+See the
+[vision benchmark specification](docs/vision-benchmark/workload-specification.md)
+and open `/vision-benchmark` after starting the app.
 
 ---
 
@@ -54,7 +71,7 @@ It turns that question into **recorded benchmarks**, a clear **comparison view**
 
 ### Requirements
 
-- Node.js 18+  
+- Node.js 24
 - PostgreSQL  
 - [Ollama](https://ollama.com/) (optional, for local models)  
 

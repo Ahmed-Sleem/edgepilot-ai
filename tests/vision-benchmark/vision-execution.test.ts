@@ -1,6 +1,8 @@
 import {
   executeVisionBenchmark,
+  PreparedVisionImage,
   VisionBenchmarkClock,
+  VisionImageProcessor,
   VisionBenchmarkSample,
   VisionProvider,
   VisionProviderRequest,
@@ -17,10 +19,33 @@ function createSample(
     id,
     imagePath: `datasets/vision-benchmark/images/${id}.png`,
     expectedLabel,
+    sourceId: `synthetic-${expectedLabel}-v1`,
+    licenseSpdx: 'MIT',
     licenseVerified: true,
     privacyReviewed: true,
+    containsPeople: false,
+    containsFaces: false,
+    containsPersonalData: false,
+    exifPresent: false,
     sha256: VALID_SHA,
   };
+}
+
+class FakeImageProcessor implements VisionImageProcessor {
+  readonly version = 'fake-image-processor-v1';
+
+  async prepare(): Promise<PreparedVisionImage> {
+    return {
+      data: new Uint8Array([1, 2, 3]),
+      mimeType: 'image/png',
+      width: 32,
+      height: 32,
+      sourceBytes: 3,
+      processedBytes: 3,
+      sourceSha256: VALID_SHA,
+      processedSha256: VALID_SHA,
+    };
+  }
 }
 
 class SequenceClock implements VisionBenchmarkClock {
@@ -88,6 +113,7 @@ function createExecutionInput(
 ) {
   return {
     provider,
+    imageProcessor: new FakeImageProcessor(),
     clock,
     samples,
     workloadVersion: '1.0.0',
@@ -96,8 +122,9 @@ function createExecutionInput(
     promptVersion: '1.0.0',
     prompt:
       'Return exactly one supported construction component label.',
+    executionMode: 'controlled' as const,
     deviceProfileId: 'test-device',
-    gitCommitSha: 'test-commit',
+    gitCommitSha: '0cd3930',
   };
 }
 
