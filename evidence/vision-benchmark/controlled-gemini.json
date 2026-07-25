@@ -4,7 +4,7 @@
   "workloadVersion": "1.0.0",
   "datasetId": "edgepilot-synthetic-construction-components-v1",
   "manifestVersion": "1.0.0",
-  "manifestSha256": "b10f9993fbbcd432e68f3602243d389464e38768da5cab73cc843aafb38165e4",
+  "manifestSha256": "30fd92076bbfc13be4ceed672e1df62a8511c32755b695699296edf38a99dea1",
   "preprocessingVersion": "sharp-png-v1",
   "promptVersion": "1.0.0",
   "executionMode": "controlled",
