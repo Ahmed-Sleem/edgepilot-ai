@@ -65,6 +65,28 @@ See the
 [vision benchmark specification](docs/vision-benchmark/workload-specification.md)
 and open `/vision-benchmark` after starting the app.
 
+### Local & cloud model benchmarking
+
+The provider layer measures text-generation latency and token throughput
+against a local Ollama instance and the Gemini and Groq APIs through one
+server-side interface:
+
+- Streaming adapters, so time-to-first-token is measured rather than inferred.
+- Token counts taken from each provider's own usage metadata, never estimated
+  from the text.
+- Per-request timeouts and an explicit fallback policy with eight documented
+  error codes.
+- Provider keys read on the server only; nothing reaches the browser bundle.
+- Docker Compose profiles for Postgres, Ollama and the app, plus an automated
+  clean-environment capture.
+- 122 automated cases across normal, invalid, timeout and fallback paths.
+
+Start with the
+[benchmark & provider layer branch guide](docs/benchmark/README.md); the
+setup path is in [`docs/local-model-setup.md`](docs/local-model-setup.md) and
+the wire contract is in
+[`docs/internal/benchmark-api.md`](docs/internal/benchmark-api.md).
+
 ---
 
 ## Quick start
