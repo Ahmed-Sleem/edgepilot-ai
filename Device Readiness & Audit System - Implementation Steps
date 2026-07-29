@@ -1,0 +1,22 @@
+Device Readiness & Audit System - Implementation Steps
+This document outlines the four essential steps for building a device readiness evaluation and AI integration system using Hexagonal Architecture.
+
+1. Define pilot device/workload, approved sources, first profile schema and deterministic readiness concept
+Purpose: Define data characteristics, design validation schemas using Zod, and build the deterministic core evaluation logic independently of external factors.
+
+Associated File: domain/deviceEvaluator.js
+
+2. Finalize structured device/benchmark fields and test readiness inputs/outputs
+Purpose: Build foundational interfaces and contracts (Ports) that dictate how the system communicates with data sources and AI services in an organized and stable manner.
+
+Associated Files: ports/deviceRepository.js and ports/aiServicePort.js
+
+3. Integrate official evidence and readiness tool with benchmark API/UI: verify not-measured and conflict behavior
+Purpose: Implement actual adapters (Adapters) to fetch the 8 official devices, validate them using Zod, connect the system to local Ollama for intelligent insights, and handle Conflict and Not-Measured states.
+
+Associated Files: adapters/jsonDeviceRepository.js and adapters/ollamaServiceAdapter.js
+
+4. Audit production recommendations, regression cases, limitations and documentation against rubric
+Purpose: Serve as the main execution entry point and orchestrator (Primary Adapter), bringing all layers together to produce final reports and audits verifying device readiness.
+
+Associated File: app.js
