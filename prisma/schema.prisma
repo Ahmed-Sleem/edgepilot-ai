@@ -1,10 +1,27 @@
+// EdgePilot AI — Prisma schema
+//
+// Table/column names are snake_case in the database and camelCase in TypeScript.
+// Do not rename a @map() value without a migration: the API responses and the
+// column names are contractually linked (e.g. providers.is_active is what
+// /api/v1/providers returns as `is_active`).
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+
+  // url        = the connection the running app uses. On Neon this is the
+  //              POOLED host (…-pooler.…) — it survives many short-lived
+  //              serverless connections.
+  // directUrl  = the connection the Prisma CLI uses for migrations. Must be
+  //              the UNPOOLED host (same string, `-pooler` removed), because
+  //              schema changes cannot run through pgBouncer.
+  //
+  // For local Docker Postgres there is no pooler, so both are the same string.
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -17,6 +34,8 @@ model User {
   workloads  Workload[]
   devices    Device[]
   benchmarks Benchmark[]
+
+  @@map("users")
 }
 
 model Workload {
@@ -29,9 +48,10 @@ model Workload {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  user       User        @relation(fields: [userId], references: [id])
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   benchmarks Benchmark[]
 
+  @@index([userId])
   @@map("workloads")
 }
 
@@ -47,12 +67,17 @@ model Device {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user       User        @relation(fields: [userId], references: [id])
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   benchmarks Benchmark[]
 
+  @@index([userId])
   @@map("devices")
 }
 
+// Shared catalog reference data, not user-owned. Retire a provider by setting
+// isActive = false rather than deleting it — deleting one is blocked while any
+// benchmark still references it (see Benchmark.provider below), because the
+// benchmark history has to keep saying which provider produced it.
 model Provider {
   id        String   @id @default(uuid())
   name      String   @unique
@@ -67,25 +92,32 @@ model Provider {
 }
 
 model Benchmark {
-  id             String    @id @default(uuid())
-  workloadId     String    @map("workload_id")
-  deviceId       String    @map("device_id")
-  providerId     String    @map("provider_id")
-  model          String
-  prompt         String
-  iterations     Int       @default(1)
-  status         String    @default("pending")
-  userId         String    @map("user_id")
-  createdAt      DateTime  @default(now())
-  completedAt    DateTime? @map("completed_at")
+  id          String    @id @default(uuid())
+  workloadId  String    @map("workload_id")
+  deviceId    String    @map("device_id")
+  providerId  String    @map("provider_id")
+  model       String
+  prompt      String
+  iterations  Int       @default(1)
+  status      String    @default("pending")
+  userId      String    @map("user_id")
+  createdAt   DateTime  @default(now())
+  completedAt DateTime? @map("completed_at")
 
-  workload  Workload         @relation(fields: [workloadId], references: [id])
-  device    Device           @relation(fields: [deviceId], references: [id])
-  provider  Provider         @relation(fields: [providerId], references: [id])
-  user      User             @relation(fields: [userId], references: [id])
+  workload Workload @relation(fields: [workloadId], references: [id], onDelete: Cascade)
+  device   Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // No cascade: a provider cannot be deleted out from under a recorded run.
+  provider Provider @relation(fields: [providerId], references: [id])
+
   results   BenchmarkResult[]
   readiness ReadinessScore?
 
+  @@index([workloadId])
+  @@index([deviceId])
+  @@index([providerId])
+  @@index([userId])
   @@map("benchmarks")
 }
 
@@ -100,8 +132,9 @@ model BenchmarkResult {
   errorMessage    String?  @map("error_message")
   createdAt       DateTime @default(now())
 
-  benchmark Benchmark @relation(fields: [benchmarkId], references: [id])
+  benchmark Benchmark @relation(fields: [benchmarkId], references: [id], onDelete: Cascade)
 
+  @@index([benchmarkId])
   @@map("benchmark_results")
 }
 
@@ -119,7 +152,7 @@ model ReadinessScore {
   limitations      Json     @default("[]")
   createdAt        DateTime @default(now())
 
-  benchmark Benchmark @relation(fields: [benchmarkId], references: [id])
+  benchmark Benchmark @relation(fields: [benchmarkId], references: [id], onDelete: Cascade)
 
   @@map("readiness_scores")
 }
