@@ -170,23 +170,37 @@ export function RunResults({ run, onRunAnother, onStartOver }: Props) {
   const id = useId();
   const [readiness, setReadiness] = useState<ReadinessRecord | null>(null);
   const [readinessFailure, setReadinessFailure] = useState<ApiFailure | null>(null);
-  const [readinessLoading, setReadinessLoading] = useState(false);
-
   const persistedId = isUuid(run.benchmark_id) ? run.benchmark_id : null;
 
-  const loadReadiness = async (benchmarkId: string) => {
-    setReadinessLoading(true);
-    setReadinessFailure(null);
-    const res = await getReadiness(benchmarkId);
-    setReadinessLoading(false);
-    if (res.ok) setReadiness(res.data);
-    else setReadinessFailure(res);
-  };
+  // Loading starts true only when there is a persisted id to fetch; state is
+  // then updated exclusively after the response arrives (never synchronously
+  // in the effect body — react-hooks/set-state-in-effect).
+  const [readinessLoading, setReadinessLoading] = useState<boolean>(
+    () => persistedId !== null,
+  );
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
-    if (persistedId) void loadReadiness(persistedId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [persistedId]);
+    if (!persistedId) return;
+    let cancelled = false;
+    (async () => {
+      const res = await getReadiness(persistedId);
+      if (cancelled) return;
+      if (res.ok) setReadiness(res.data);
+      else setReadinessFailure(res);
+      setReadinessLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [persistedId, retryKey]);
+
+  /** Retry from the error state (event handler — sync sets are fine). */
+  const retryReadiness = () => {
+    setReadinessLoading(true);
+    setReadinessFailure(null);
+    setRetryKey((k) => k + 1);
+  };
 
   const s = run.summary;
   const failed = run.status === "failed";
@@ -278,10 +292,7 @@ export function RunResults({ run, onRunAnother, onStartOver }: Props) {
               No stored readiness breakdown for this run.
             </p>
           ) : (
-            <ErrorState
-              failure={readinessFailure}
-              onRetry={() => void loadReadiness(persistedId)}
-            />
+            <ErrorState failure={readinessFailure} onRetry={retryReadiness} />
           )
         ) : readiness ? (
           <ReadinessBars readiness={readiness} />

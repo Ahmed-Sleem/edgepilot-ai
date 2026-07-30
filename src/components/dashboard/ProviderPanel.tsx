@@ -53,23 +53,35 @@ export function ProviderPanel({
   const [failure, setFailure] = useState<ApiFailure | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const load = async () => {
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // State updates happen only after the response arrives (never synchronously
+  // inside the effect body — react-hooks/set-state-in-effect), and a cancelled
+  // flag drops responses that land after unmount.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const res = await getProviders();
+      if (cancelled) return;
+      if (res.ok) {
+        setProviders(res.data);
+        setMeta((res.meta as ProvidersMeta) ?? null);
+      } else {
+        setFailure(res);
+      }
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadKey]);
+
+  /** Retry from the error/empty states (event handler — sync sets are fine). */
+  const load = () => {
     setLoading(true);
     setFailure(null);
-    const res = await getProviders();
-    setLoading(false);
-    if (!res.ok) {
-      setFailure(res);
-      return;
-    }
-    setProviders(res.data);
-    setMeta((res.meta as ProvidersMeta) ?? null);
+    setReloadKey((k) => k + 1);
   };
-
-  useEffect(() => {
-    void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const selected = providers?.find((p) => p.name === selectedProvider) ?? null;
   const ready = selected !== null && model.trim().length > 0;
