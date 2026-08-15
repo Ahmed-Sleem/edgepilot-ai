@@ -15,75 +15,72 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#0a0d14] text-[#e6edf3] p-4">
+    <div className="container">
       {/* Navigation */}
-      <header className="flex justify-between items-center py-3 border-b border-[#1c2633] mb-8">
-        <div className="font-bold text-xl tracking-widest px-3 py-1 border-2 border-[#8b949e]">
+      <header className="nav-bar">
+        <div className="nav-logo pixel-border" style={{ padding: 'var(--sp-1) var(--sp-3)' }}>
           EDGEPILOT_AI
         </div>
-        <nav className="flex gap-6">
-          <a href="/" className="text-[#e6edf3] uppercase hover:text-[#F59E0B]">
-            HOME
-          </a>
-          <a
-            href="/dashboard"
-            className="text-[#e6edf3] uppercase hover:text-[#F59E0B]"
-          >
-            BENCHMARK
-          </a>
-          <a
-            href="/vision-benchmark"
-            className="text-[#e6edf3] uppercase hover:text-[#F59E0B]"
-          >
-            VISION
-          </a>
+        <nav className="nav-links">
+          <a href="/" className="active">HOME</a>
+          <a href="/dashboard">BENCHMARK</a>
+          <a href="/vision-benchmark">VISION</a>
         </nav>
       </header>
 
       {/* Hero Section */}
-      <div className="max-w-4xl mx-auto text-center py-12">
-        <h1 className="text-4xl md:text-5xl font-bold uppercase tracking-wider mb-6">
-          Compare local & cloud AI
-          <br />
-          <span className="text-[#F59E0B]">with real benchmarks.</span>
+      <section className="card text-center" style={{ padding: 'var(--sp-6)' }}>
+        <h1 style={{ 
+          fontSize: '2.5rem', 
+          textTransform: 'uppercase', 
+          letterSpacing: '2px', 
+          marginBottom: 'var(--sp-3)' 
+        }}>
+          Compare local & cloud AI<br />
+          <span className="text-accent glow-text">with real benchmarks.</span>
         </h1>
-        <p className="text-[#8b949e] text-lg max-w-2xl mx-auto mb-8">
-          EdgePilot AI helps teams compare local and cloud AI deployment options
+        <p style={{ 
+          color: 'var(--text-secondary)', 
+          maxWidth: '600px', 
+          margin: '0 auto var(--sp-4)', 
+          fontSize: '1.1rem' 
+        }}>
+          EdgePilot AI helps teams compare local and cloud AI deployment options 
           with real benchmarks and evidence-based recommendations.
         </p>
-        <div className="flex gap-4 justify-center flex-wrap">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="bg-[#1E3A8A] text-white px-6 py-3 font-bold uppercase border-2 border-[#1E3A8A] hover:bg-[#2d4a9a] transition-colors"
+        <div style={{ display: 'flex', gap: 'var(--sp-3)', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => router.push('/dashboard')}
           >
             GET STARTED
           </button>
-          <button
-            onClick={() => router.push("/vision-benchmark")}
-            className="bg-transparent text-[#e6edf3] px-6 py-3 font-bold uppercase border-2 border-[#8b949e] hover:border-[#e6edf3] transition-colors"
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => router.push('/vision-benchmark')}
           >
             VISION BENCHMARK
           </button>
         </div>
-      </div>
+      </section>
 
       {/* Features */}
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
-        <div className="bg-[#131a25] border-2 border-[#8b949e] p-6">
-          <h3 className="font-bold mb-2">Feature 01</h3>
-          <p className="text-[#8b949e]">Real-world workload simulation</p>
+      <div className="row">
+        <div className="col card">
+          <strong>Feature 01</strong><br />
+          <span className="text-secondary">Real-world workload simulation</span>
         </div>
-        <div className="bg-[#131a25] border-2 border-[#8b949e] p-6">
-          <h3 className="font-bold mb-2">Feature 02</h3>
-          <p className="text-[#8b949e]">Multi-provider comparison</p>
+        <div className="col card">
+          <strong>Feature 02</strong><br />
+          <span className="text-secondary">Multi-provider comparison</span>
         </div>
-        <div className="bg-[#131a25] border-2 border-[#8b949e] p-6">
-          <h3 className="font-bold mb-2">Feature 03</h3>
-          <p className="text-[#8b949e]">Evidence-based scoring</p>
+        <div className="col card">
+          <strong>Feature 03</strong><br />
+          <span className="text-secondary">Evidence-based scoring</span>
         </div>
-        <div className="bg-[#131a25] border-2 border-[#8b949e] p-6">
-          <h3 className="font-bold mb-2">Feature 04</h3>
-          <p className="text-[#8b949e]">Exportable JSON reports</p>
+        <div className="col card">
+          <strong>Feature 04</strong><br />
+          <span className="text-secondary">Exportable JSON reports</span>
         </div>
       </div>
     </div>

@@ -187,599 +187,475 @@ export default function DashboardPage() {
   const isStep2Complete = selectedProvider !== "" && model !== "";
 
   return (
-    <div className="min-h-screen bg-[#0a0d14] text-[#e6edf3] p-4">
+    <div className="container">
       {/* Navigation */}
-      <header className="flex justify-between items-center py-3 border-b border-[#1c2633] mb-8">
-        <div className="font-bold text-xl tracking-widest px-3 py-1 border-2 border-[#8b949e]">
+      <header className="nav-bar">
+        <div className="nav-logo pixel-border" style={{ padding: 'var(--sp-1) var(--sp-3)' }}>
           EDGEPILOT_AI
         </div>
-        <nav className="flex gap-6">
-          <a href="/" className="text-[#e6edf3] uppercase hover:text-[#F59E0B]">
-            HOME
-          </a>
-          <a
-            href="/dashboard"
-            className="text-[#F59E0B] uppercase"
-          >
-            BENCHMARK
-          </a>
-          <a
-            href="/vision-benchmark"
-            className="text-[#e6edf3] uppercase hover:text-[#F59E0B]"
-          >
-            VISION
-          </a>
+        <nav className="nav-links">
+          <a href="/">HOME</a>
+          <a href="/dashboard" className="active">BENCHMARK</a>
+          <a href="/vision-benchmark">VISION</a>
         </nav>
       </header>
 
       {/* Step Indicator */}
-      <div className="max-w-4xl mx-auto mb-8">
-        <div className="flex justify-between items-center bg-[#131a25] border-2 border-[#8b949e] p-2 gap-2">
-          {[1, 2, 3, 4].map((step) => (
-            <div
-              key={step}
-              className={`flex-1 text-center py-2 text-sm uppercase border-2 transition-all ${
-                step === currentStep
-                  ? "border-[#F59E0B] bg-[rgba(245,158,11,0.1)] text-[#e6edf3]"
-                  : step < currentStep
-                  ? "border-transparent text-[#10B981]"
-                  : "border-transparent text-[#8b949e] opacity-40"
-              }`}
-            >
-              {step < currentStep ? "✓ " : ""}
-              {step === 1 && "1. Workload & Device"}
-              {step === 2 && "2. Provider"}
-              {step === 3 && "3. Run"}
-              {step === 4 && "4. Results"}
-            </div>
-          ))}
-        </div>
+      <div className="step-indicator">
+        {[1, 2, 3, 4].map((step) => (
+          <div
+            key={step}
+            className={`step-pill ${step === currentStep ? 'active' : ''} ${step < currentStep ? 'completed' : ''}`}
+            data-step={step}
+          >
+            {step === 1 && "1. Workload & Device"}
+            {step === 2 && "2. Provider"}
+            {step === 3 && "3. Run"}
+            {step === 4 && "4. Results"}
+          </div>
+        ))}
       </div>
 
-      {/* Step Content */}
-      <div className="max-w-4xl mx-auto">
-        {/* STEP 1: Workload & Device */}
-        {currentStep === 1 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Workload Card */}
-            <div className="bg-[#131a25] border-2 border-[#8b949e] p-6">
-              <h3 className="font-bold border-b border-[#8b949e] pb-2 mb-4">
+      {/* STEP 1: Workload & Device */}
+      {currentStep === 1 && (
+        <div id="step-1" className="step-content active">
+          <div className="row">
+            {/* Left: Workload */}
+            <div className="col card">
+              <h3 style={{ borderBottom: '1px solid var(--text-secondary)', paddingBottom: 'var(--sp-2)', marginBottom: 'var(--sp-3)' }}>
                 WORKLOAD
               </h3>
-              <div className="mb-4">
-                <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                  Task Type
-                </label>
-                <select className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono">
+              <div className="form-group">
+                <label htmlFor="task-type">Task Type</label>
+                <select id="task-type" className="form-select">
                   <option>Text Generation</option>
                   <option>Code Generation</option>
                   <option>Image Recognition</option>
                   <option>Multimodal</option>
                 </select>
               </div>
-              <div className="mb-4">
-                <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                  Input Format
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono"
-                  defaultValue="plain text prompt"
-                />
+              <div className="form-group">
+                <label htmlFor="input-format">Input Format</label>
+                <input type="text" id="input-format" className="form-input" defaultValue="plain text prompt" />
               </div>
-              <div className="mb-4">
-                <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                  Output Format
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono"
-                  defaultValue="plain text answer"
-                />
+              <div className="form-group">
+                <label htmlFor="output-format">Output Format</label>
+                <input type="text" id="output-format" className="form-input" defaultValue="plain text answer" />
               </div>
-              <button
-                onClick={registerWorkload}
-                className="w-full bg-[#1c2633] text-[#e6edf3] py-2 font-bold uppercase border-2 border-[#8b949e] hover:border-[#e6edf3] transition-colors"
-              >
-                REGISTER WORKLOAD
-              </button>
-              {workload && (
-                <div className="mt-2 text-sm text-[#8b949e]">
-                  UUID: {workload.id}
-                </div>
-              )}
+              <div className="flex justify-between items-center" style={{ marginTop: 'var(--sp-2)' }}>
+                <button className="btn btn-secondary" onClick={registerWorkload}>
+                  REGISTER WORKLOAD
+                </button>
+                <span id="workload-uuid" className="text-secondary" style={{ fontSize: '0.8rem' }}>
+                  UUID: {workload ? workload.id : '---'}
+                </span>
+              </div>
             </div>
 
-            {/* Device Card */}
-            <div className="bg-[#131a25] border-2 border-[#8b949e] p-6">
-              <h3 className="font-bold border-b border-[#8b949e] pb-2 mb-4">
+            {/* Right: Device */}
+            <div className="col card">
+              <h3 style={{ borderBottom: '1px solid var(--text-secondary)', paddingBottom: 'var(--sp-2)', marginBottom: 'var(--sp-3)' }}>
                 DEVICE
               </h3>
-              <div className="mb-4">
-                <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono"
-                  placeholder="e.g. MacBook Air M1 (8 GB)"
-                />
+              <div className="form-group">
+                <label htmlFor="device-name">Name</label>
+                <input type="text" id="device-name" className="form-input" placeholder="e.g. MacBook Air M1 (8 GB)" />
               </div>
-              <div className="mb-4">
-                <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                  CPU
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono"
-                  placeholder="e.g. Apple M1"
-                />
+              <div className="form-group">
+                <label htmlFor="device-cpu">CPU</label>
+                <input type="text" id="device-cpu" className="form-input" placeholder="e.g. Apple M1" />
               </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                    RAM (GB)
-                  </label>
-                  <input
-                    type="number"
-                    className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono"
-                    defaultValue={16}
-                    min={1}
-                  />
+              <div className="row" style={{ gap: 'var(--sp-2)' }}>
+                <div className="col form-group">
+                  <label htmlFor="device-ram">RAM (GB)</label>
+                  <input type="number" id="device-ram" className="form-input" defaultValue="16" min="1" />
                 </div>
-                <div>
-                  <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                    Storage (GB)
-                  </label>
-                  <input
-                    type="number"
-                    className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono"
-                    defaultValue={256}
-                    min={1}
-                  />
+                <div className="col form-group">
+                  <label htmlFor="device-storage">Storage (GB)</label>
+                  <input type="number" id="device-storage" className="form-input" defaultValue="256" min="1" />
                 </div>
               </div>
-              <div className="mb-4">
-                <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                  GPU (Optional)
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono"
-                  placeholder="leave empty for none"
-                />
+              <div className="form-group">
+                <label htmlFor="device-gpu">GPU (Optional)</label>
+                <input type="text" id="device-gpu" className="form-input" placeholder="leave empty for none" />
               </div>
-              <button
-                onClick={registerDevice}
-                className="w-full bg-[#1c2633] text-[#e6edf3] py-2 font-bold uppercase border-2 border-[#8b949e] hover:border-[#e6edf3] transition-colors"
+              <div className="flex justify-between items-center" style={{ marginTop: 'var(--sp-2)' }}>
+                <button className="btn btn-secondary" onClick={registerDevice}>
+                  REGISTER DEVICE
+                </button>
+                <span id="device-uuid" className="text-secondary" style={{ fontSize: '0.8rem' }}>
+                  UUID: {device ? device.id : '---'}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between mt-4">
+            <span id="step1-warning" className="text-warning" style={{ fontSize: '0.9rem' }}>
+              {!isStep1Complete ? '⚠ Register Workload & Device to continue' : '✔ Both registered!'}
+            </span>
+            <button 
+              className="btn btn-primary" 
+              id="btn-to-step2" 
+              disabled={!isStep1Complete} 
+              onClick={() => setCurrentStep(2)}
+            >
+              CONTINUE TO PROVIDERS →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 2: Provider */}
+      {currentStep === 2 && (
+        <div id="step-2" className="step-content active">
+          <div className="card">
+            <h3 style={{ borderBottom: '1px solid var(--text-secondary)', paddingBottom: 'var(--sp-2)', marginBottom: 'var(--sp-3)' }}>
+              SELECT AI PROVIDER
+            </h3>
+            <div className="provider-grid" id="provider-grid">
+              {/* Ollama */}
+              <div 
+                className={`provider-card ${selectedProvider === 'ollama' ? 'selected' : ''}`} 
+                onClick={() => {
+                  setSelectedProvider('ollama');
+                  setModel('llama3.2:1b');
+                }}
               >
-                REGISTER DEVICE
-              </button>
-              {device && (
-                <div className="mt-2 text-sm text-[#8b949e]">
-                  UUID: {device.id}
-                </div>
+                <div className="provider-color ollama"></div>
+                <strong>Ollama</strong><br />
+                <span className="text-secondary" style={{ fontSize: '0.8rem' }}>Local · Privacy High</span>
+                <div><span className="badge badge-success">configured</span></div>
+              </div>
+              {/* Gemini */}
+              <div 
+                className={`provider-card ${selectedProvider === 'gemini' ? 'selected' : ''}`} 
+                onClick={() => {
+                  setSelectedProvider('gemini');
+                  setModel('gemini-2.5-flash');
+                }}
+              >
+                <div className="provider-color gemini"></div>
+                <strong>Gemini</strong><br />
+                <span className="text-secondary" style={{ fontSize: '0.8rem' }}>Cloud · Privacy Medium</span>
+                <div><span className="badge badge-error">not configured</span></div>
+              </div>
+              {/* Groq */}
+              <div 
+                className={`provider-card ${selectedProvider === 'groq' ? 'selected' : ''}`} 
+                onClick={() => {
+                  setSelectedProvider('groq');
+                  setModel('llama-3.1-8b-instant');
+                }}
+              >
+                <div className="provider-color groq"></div>
+                <strong>Groq</strong><br />
+                <span className="text-secondary" style={{ fontSize: '0.8rem' }}>Cloud · Privacy Low</span>
+                <div><span className="badge badge-success">configured</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 style={{ borderBottom: '1px solid var(--text-secondary)', paddingBottom: 'var(--sp-2)', marginBottom: 'var(--sp-3)' }}>
+              MODEL SELECTION
+            </h3>
+            <div className="form-group">
+              <label htmlFor="model-select">Model</label>
+              <input 
+                type="text" 
+                id="model-select" 
+                className="form-input" 
+                placeholder="e.g. llama3.2:1b" 
+                list="model-suggestions"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+              />
+              <datalist id="model-suggestions">
+                <option value="llama3.2:1b" />
+                <option value="llama3.2:3b" />
+                <option value="llama3.1:8b" />
+                <option value="gemini-2.5-flash" />
+                <option value="gemini-2.5-pro" />
+                <option value="llama-3.1-8b-instant" />
+                <option value="llama-3.3-70b-versatile" />
+              </datalist>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mt-4">
+            <button className="btn btn-secondary" onClick={() => setCurrentStep(1)}>
+              ← BACK
+            </button>
+            <button 
+              className="btn btn-primary" 
+              id="btn-to-step3" 
+              disabled={!isStep2Complete} 
+              onClick={() => setCurrentStep(3)}
+            >
+              CONTINUE TO RUN →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 3: Benchmark Run */}
+      {currentStep === 3 && (
+        <div id="step-3" className="step-content active">
+          <div className="card">
+            <h3 style={{ borderBottom: '1px solid var(--text-secondary)', paddingBottom: 'var(--sp-2)', marginBottom: 'var(--sp-3)' }}>
+              RUN CONFIGURATION
+            </h3>
+            <div className="form-group">
+              <label htmlFor="task-preset">Controlled Task</label>
+              <select id="task-preset" className="form-select">
+                <option value="text_completion">Text Completion · Low</option>
+                <option value="code_gen">Code Generation · Medium</option>
+                <option value="image_class">Image Classification · High</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="iterations">Iterations</label>
+              <input 
+                type="number" 
+                id="iterations" 
+                className="form-input" 
+                value={iterations} 
+                onChange={(e) => setIterations(Number(e.target.value))}
+                min="1" 
+                max="100" 
+              />
+              <div className="form-hint">More iterations → better medians, longer run</div>
+            </div>
+            <div className="form-group">
+              <label htmlFor="prompt-input">Prompt</label>
+              <textarea 
+                id="prompt-input" 
+                className="form-textarea" 
+                maxLength={10000}
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+              />
+              <div className="form-hint">
+                <span id="char-count">{prompt.length}</span> / 10000 characters
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mt-4">
+            <button className="btn btn-secondary" onClick={() => setCurrentStep(2)}>
+              ← BACK
+            </button>
+            <button 
+              className="btn btn-success" 
+              id="btn-run-benchmark" 
+              onClick={runBenchmark}
+              disabled={isRunning}
+            >
+              {isRunning ? (
+                <>
+                  <span className="spinner"></span> Running...
+                </>
+              ) : (
+                'RUN BENCHMARK'
               )}
+            </button>
+          </div>
+          
+          {/* Running State */}
+          {isRunning && (
+            <div id="running-state" className="card" style={{ borderColor: 'var(--color-accent)' }}>
+              <div className="flex items-center gap-4">
+                <span className="spinner"></span>
+                <div>
+                  <strong>Benchmark running… <span id="timer-display">{formatElapsed(elapsed)}</span></strong><br />
+                  <span className="text-secondary" id="run-message">
+                    {iterations} iteration(s) of real inference against {selectedProvider}. Long runs are normal.
+                  </span>
+                </div>
+              </div>
             </div>
+          )}
+        </div>
+      )}
 
-            {/* Continue Button */}
-            <div className="md:col-span-2 flex justify-between items-center">
-              <span className="text-[#F59E0B] text-sm">
-                {!isStep1Complete
-                  ? "⚠ Register Workload & Device to continue"
-                  : "✔ Both registered!"}
-              </span>
-              <button
-                onClick={() => setCurrentStep(2)}
-                disabled={!isStep1Complete}
-                className={`px-6 py-3 font-bold uppercase border-2 transition-colors ${
-                  isStep1Complete
-                    ? "bg-[#1E3A8A] border-[#1E3A8A] text-white hover:bg-[#2d4a9a]"
-                    : "bg-[#1c2633] border-[#8b949e] text-[#8b949e] cursor-not-allowed"
-                }`}
-              >
-                CONTINUE TO PROVIDERS →
-              </button>
+      {/* STEP 4: Results */}
+      {currentStep === 4 && results && (
+        <div id="step-4" className="step-content active">
+          <div className="flex items-center justify-between mb-4">
+            <h3 style={{ borderBottom: '1px solid var(--text-secondary)', paddingBottom: 'var(--sp-2)' }}>
+              RESULTS & READINESS
+            </h3>
+            <span className="text-secondary" style={{ fontSize: '0.9rem' }}>
+              {selectedProvider} · {model} · benchmark id: {results.benchmark_id}
+            </span>
+          </div>
+
+          {/* Summary Stats */}
+          <div className="stats-grid mb-4">
+            <div className="stat-card">
+              <div className="stat-value text-success">
+                {results.results.filter((r) => r.success).length}/{results.results.length}
+              </div>
+              <div className="stat-label">Success Rate</div>
+              <div className="text-secondary" style={{ fontSize: '0.8rem' }}>
+                {results.results.filter((r) => r.success).length}/{results.results.length} iterations
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">
+                {Math.round(
+                  results.results.reduce((sum, r) => sum + r.latency_ms, 0) /
+                    results.results.length
+                )}{" "}ms
+              </div>
+              <div className="stat-label">Mean Latency</div>
+              <div className="text-secondary" style={{ fontSize: '0.8rem' }}>
+                min {Math.min(...results.results.map(r => r.latency_ms))} · max {Math.max(...results.results.map(r => r.latency_ms))}
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">
+                {results.results[0]?.ttft_ms || 0} ms
+              </div>
+              <div className="stat-label">p50 Latency</div>
+              <div className="text-secondary" style={{ fontSize: '0.8rem' }}>withheld below 3 successes</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value text-accent">
+                {results.results[0]?.tokens_per_second || 0}
+              </div>
+              <div className="stat-label">Tokens / Second</div>
+              <div className="text-secondary" style={{ fontSize: '0.8rem' }}>
+                TTFT mean {results.results[0]?.ttft_ms || 0} ms
+              </div>
             </div>
           </div>
-        )}
 
-        {/* STEP 2: Provider Selection */}
-        {currentStep === 2 && (
-          <div>
-            <div className="bg-[#131a25] border-2 border-[#8b949e] p-6 mb-6">
-              <h3 className="font-bold border-b border-[#8b949e] pb-2 mb-4">
-                SELECT AI PROVIDER
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {providers.map((provider) => (
-                  <div
-                    key={provider.name}
-                    onClick={() => {
-                      setSelectedProvider(provider.name);
-                      setModel(
-                        provider.name === "ollama"
-                          ? "llama3.2:1b"
-                          : provider.name === "gemini"
-                          ? "gemini-2.5-flash"
-                          : "llama-3.1-8b-instant"
-                      );
-                    }}
-                    className={`bg-[#131a25] border-2 p-4 cursor-pointer text-center transition-all ${
-                      selectedProvider === provider.name
-                        ? "border-[#F59E0B] shadow-[0_0_10px_rgba(245,158,11,0.3)]"
-                        : "border-[#8b949e] hover:border-[#e6edf3]"
-                    }`}
-                  >
-                    <div
-                      className={`w-5 h-5 mx-auto mb-2 border border-white ${
-                        provider.name === "ollama"
-                          ? "bg-[#3B82F6]"
-                          : provider.name === "gemini"
-                          ? "bg-[#10B981]"
-                          : "bg-[#F59E0B]"
-                      }`}
-                    />
-                    <strong>{provider.name}</strong>
-                    <br />
-                    <span className="text-[#8b949e] text-sm">
-                      {provider.type} · Privacy {provider.privacy_level}
-                    </span>
-                    <div className="mt-2">
-                      <span
-                        className={`inline-block px-2 py-1 text-xs font-bold uppercase ${
-                          provider.is_configured
-                            ? "bg-[#10B981] text-white"
-                            : "bg-[#EF4444] text-white"
-                        }`}
-                      >
-                        {provider.is_configured ? "configured" : "not configured"}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-[#131a25] border-2 border-[#8b949e] p-6 mb-6">
-              <h3 className="font-bold border-b border-[#8b949e] pb-2 mb-4">
-                MODEL SELECTION
-              </h3>
-              <div className="mb-4">
-                <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                  Model
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono"
-                  placeholder="e.g. llama3.2:1b"
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <button
-                onClick={() => setCurrentStep(1)}
-                className="px-6 py-3 font-bold uppercase border-2 border-[#8b949e] text-[#e6edf3] hover:border-[#e6edf3] transition-colors"
-              >
-                ← BACK
-              </button>
-              <button
-                onClick={() => setCurrentStep(3)}
-                disabled={!isStep2Complete}
-                className={`px-6 py-3 font-bold uppercase border-2 transition-colors ${
-                  isStep2Complete
-                    ? "bg-[#1E3A8A] border-[#1E3A8A] text-white hover:bg-[#2d4a9a]"
-                    : "bg-[#1c2633] border-[#8b949e] text-[#8b949e] cursor-not-allowed"
-                }`}
-              >
-                CONTINUE TO RUN →
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 3: Benchmark Run */}
-        {currentStep === 3 && (
-          <div>
-            <div className="bg-[#131a25] border-2 border-[#8b949e] p-6 mb-6">
-              <h3 className="font-bold border-b border-[#8b949e] pb-2 mb-4">
-                RUN CONFIGURATION
-              </h3>
-              <div className="mb-4">
-                <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                  Controlled Task
-                </label>
-                <select className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono">
-                  <option>Text Completion · Low</option>
-                  <option>Code Generation · Medium</option>
-                  <option>Image Classification · High</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                  Iterations
-                </label>
-                <input
-                  type="number"
-                  className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono"
-                  value={iterations}
-                  onChange={(e) => setIterations(Number(e.target.value))}
-                  min={1}
-                  max={100}
-                />
-                <div className="text-[#8b949e] text-sm mt-1">
-                  More iterations → better medians, longer run
-                </div>
-              </div>
-              <div className="mb-4">
-                <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                  Prompt
-                </label>
-                <textarea
-                  className="w-full p-2 bg-[#0a0d14] border-2 border-[#8b949e] text-[#e6edf3] font-mono min-h-[100px] resize-y"
-                  maxLength={10000}
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                />
-                <div className="text-[#8b949e] text-sm mt-1">
-                  {prompt.length} / 10000 characters
-                </div>
-              </div>
-            </div>
-
-            {/* Running State */}
-            {isRunning && (
-              <div
-                className="bg-[#131a25] border-2 border-[#F59E0B] p-6 mb-6"
-                style={{ borderColor: "#F59E0B" }}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-4 h-4 border-2 border-[#8b949e] border-t-[#F59E0B] rounded-full animate-spin" />
-                  <div>
-                    <strong>
-                      Benchmark running… {formatElapsed(elapsed)}
-                    </strong>
-                    <br />
-                    <span className="text-[#8b949e]">
-                      {iterations} iteration(s) of real inference against{" "}
-                      {selectedProvider}. Long runs are normal.
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="flex justify-between items-center">
-              <button
-                onClick={() => setCurrentStep(2)}
-                className="px-6 py-3 font-bold uppercase border-2 border-[#8b949e] text-[#e6edf3] hover:border-[#e6edf3] transition-colors"
-              >
-                ← BACK
-              </button>
-              <button
-                onClick={runBenchmark}
-                disabled={isRunning}
-                className={`px-6 py-3 font-bold uppercase border-2 transition-colors ${
-                  isRunning
-                    ? "bg-[#1c2633] border-[#8b949e] text-[#8b949e] cursor-not-allowed"
-                    : "bg-[#10B981] border-[#10B981] text-white hover:bg-[#0d9668]"
-                }`}
-              >
-                {isRunning ? (
-                  <>
-                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Running...
-                  </>
-                ) : (
-                  "RUN BENCHMARK"
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 4: Results */}
-        {currentStep === 4 && results && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold border-b border-[#8b949e] pb-2">
-                RESULTS & READINESS
-              </h3>
-              <span className="text-[#8b949e] text-sm">
-                {selectedProvider} · {model} · benchmark id: {results.benchmark_id}
-              </span>
-            </div>
-
-            {/* Summary Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-[#131a25] border-2 border-[#8b949e] p-4 text-center">
-                <div className="text-2xl font-bold text-[#10B981]">
-                  {results.results.filter((r) => r.success).length}/{results.results.length}
-                </div>
-                <div className="text-[#8b949e] text-sm uppercase">Success Rate</div>
-              </div>
-              <div className="bg-[#131a25] border-2 border-[#8b949e] p-4 text-center">
-                <div className="text-2xl font-bold">
-                  {Math.round(
-                    results.results.reduce((sum, r) => sum + r.latency_ms, 0) /
-                      results.results.length
-                  )}{" "}
-                  ms
-                </div>
-                <div className="text-[#8b949e] text-sm uppercase">Mean Latency</div>
-              </div>
-              <div className="bg-[#131a25] border-2 border-[#8b949e] p-4 text-center">
-                <div className="text-2xl font-bold">
-                  {results.results[0]?.ttft_ms || 0} ms
-                </div>
-                <div className="text-[#8b949e] text-sm uppercase">TTFT</div>
-              </div>
-              <div className="bg-[#131a25] border-2 border-[#8b949e] p-4 text-center">
-                <div className="text-2xl font-bold text-[#F59E0B]">
-                  {results.results[0]?.tokens_per_second || 0}
-                </div>
-                <div className="text-[#8b949e] text-sm uppercase">Tokens / Second</div>
-              </div>
-            </div>
-
-            {/* Per-Iteration Table */}
-            <div className="bg-[#131a25] border-2 border-[#8b949e] p-6 mb-6">
-              <h4 className="font-bold mb-4">Per-Iteration Evidence</h4>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-[#1c2633]">
-                      <th className="p-2 text-left text-[#8b949e] text-sm uppercase">#</th>
-                      <th className="p-2 text-left text-[#8b949e] text-sm uppercase">Provider</th>
-                      <th className="p-2 text-left text-[#8b949e] text-sm uppercase">Latency</th>
-                      <th className="p-2 text-left text-[#8b949e] text-sm uppercase">TTFT</th>
-                      <th className="p-2 text-left text-[#8b949e] text-sm uppercase">Tokens/s</th>
-                      <th className="p-2 text-left text-[#8b949e] text-sm uppercase">Outcome</th>
+          {/* Per-Iteration Table */}
+          <div className="card">
+            <h4 style={{ marginBottom: 'var(--sp-3)' }}>Per-Iteration Evidence</h4>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Provider</th>
+                    <th>Latency</th>
+                    <th>TTFT</th>
+                    <th>Tokens/s</th>
+                    <th>Out Tokens</th>
+                    <th>Outcome</th>
+                    <th>Provenance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {results.results.map((result, index) => (
+                    <tr key={index}>
+                      <td>{result.iteration}</td>
+                      <td>
+                        <span className={`badge ${selectedProvider === 'ollama' ? 'badge-info' : selectedProvider === 'gemini' ? 'badge-success' : 'badge-warning'}`}>
+                          {selectedProvider}
+                        </span>
+                      </td>
+                      <td>{result.latency_ms} ms</td>
+                      <td>{result.ttft_ms || '—'} ms</td>
+                      <td>{result.tokens_per_second || '—'}</td>
+                      <td>{result.tokens_per_second ? Math.round(result.latency_ms / 1000 * result.tokens_per_second) : '—'}</td>
+                      <td>
+                        {result.success ? (
+                          <span className="text-success">✓ ok</span>
+                        ) : (
+                          <span className="text-error">✕ failed</span>
+                        )}
+                      </td>
+                      <td>
+                        <span className="badge badge-success">measured</span>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {results.results.map((result, index) => (
-                      <tr key={index} className="border-b border-[#1c2633]">
-                        <td className="p-2">{result.iteration}</td>
-                        <td className="p-2">
-                          <span
-                            className={`inline-block px-2 py-1 text-xs font-bold ${
-                              selectedProvider === "ollama"
-                                ? "bg-[#3B82F6] text-white"
-                                : selectedProvider === "gemini"
-                                ? "bg-[#10B981] text-white"
-                                : "bg-[#F59E0B] text-white"
-                            }`}
-                          >
-                            {selectedProvider}
-                          </span>
-                        </td>
-                        <td className="p-2">{result.latency_ms} ms</td>
-                        <td className="p-2">{result.ttft_ms || "—"} ms</td>
-                        <td className="p-2">{result.tokens_per_second || "—"}</td>
-                        <td className="p-2">
-                          {result.success ? (
-                            <span className="text-[#10B981]">✓ ok</span>
-                          ) : (
-                            <span className="text-[#EF4444]">✕ failed</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Readiness & Score */}
+          <div className="row">
+            <div className="col-2 card">
+              <h4>Readiness Score</h4>
+              <div className="gauge-container">
+                <div className="gauge-value text-success">{results.readiness_score}</div>
+                <div className="gauge-label">/ 100</div>
+                <div style={{ marginTop: 'var(--sp-2)', fontSize: '0.9rem' }}>
+                  {results.recommendation}
+                </div>
+              </div>
+              
+              <div style={{ marginTop: 'var(--sp-4)' }}>
+                <div className="flex justify-between"><span>Hardware fit</span><span>80</span></div>
+                <div className="progress-track"><div className="progress-fill" style={{ width: '80%', background: 'var(--color-secondary)' }}></div></div>
+                <div className="flex justify-between" style={{ marginTop: 'var(--sp-2)' }}><span>Latency</span><span>60</span></div>
+                <div className="progress-track"><div className="progress-fill" style={{ width: '60%', background: 'var(--color-warning)' }}></div></div>
+                <div className="flex justify-between" style={{ marginTop: 'var(--sp-2)' }}><span>Privacy</span><span>100</span></div>
+                <div className="progress-track"><div className="progress-fill" style={{ width: '100%', background: 'var(--color-success)' }}></div></div>
+                <div className="flex justify-between" style={{ marginTop: 'var(--sp-2)' }}><span>Cost</span><span>80</span></div>
+                <div className="progress-track"><div className="progress-fill" style={{ width: '80%', background: 'var(--color-secondary)' }}></div></div>
+                <div className="flex justify-between" style={{ marginTop: 'var(--sp-2)' }}><span>Reliability</span><span>80</span></div>
+                <div className="progress-track"><div className="progress-fill" style={{ width: '80%', background: 'var(--color-secondary)' }}></div></div>
               </div>
             </div>
 
-            {/* Readiness Score */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="bg-[#131a25] border-2 border-[#8b949e] p-6">
-                <h4 className="font-bold mb-4">Readiness Score</h4>
-                <div className="flex justify-center items-center flex-col p-4 border-2 border-[#8b949e] bg-[#0a0d14] max-w-[200px] mx-auto">
-                  <div className="text-4xl font-bold text-[#10B981]">
-                    {results.readiness_score}
-                  </div>
-                  <div className="text-[#8b949e] uppercase">/ 100</div>
-                  <div className="mt-2 text-sm">{results.recommendation}</div>
-                </div>
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between">
-                    <span>Hardware fit</span>
-                    <span>80</span>
-                  </div>
-                  <div className="w-full h-3.5 bg-[#1c2633] border-2 border-[#8b949e]">
-                    <div className="h-full bg-[#0D9488]" style={{ width: "80%" }} />
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Latency</span>
-                    <span>60</span>
-                  </div>
-                  <div className="w-full h-3.5 bg-[#1c2633] border-2 border-[#8b949e]">
-                    <div className="h-full bg-[#F59E0B]" style={{ width: "60%" }} />
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Privacy</span>
-                    <span>100</span>
-                  </div>
-                  <div className="w-full h-3.5 bg-[#1c2633] border-2 border-[#8b949e]">
-                    <div className="h-full bg-[#10B981]" style={{ width: "100%" }} />
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Cost</span>
-                    <span>80</span>
-                  </div>
-                  <div className="w-full h-3.5 bg-[#1c2633] border-2 border-[#8b949e]">
-                    <div className="h-full bg-[#0D9488]" style={{ width: "80%" }} />
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Reliability</span>
-                    <span>80</span>
-                  </div>
-                  <div className="w-full h-3.5 bg-[#1c2633] border-2 border-[#8b949e]">
-                    <div className="h-full bg-[#0D9488]" style={{ width: "80%" }} />
-                  </div>
-                </div>
+            <div className="col card">
+              <h4>Evidence & Limitations</h4>
+              <div className="form-group">
+                <label>Evidence (observed)</label>
+                <ul style={{ listStyle: 'none', padding: 0, color: 'var(--text-secondary)' }}>
+                  <li>✓ {results.results.filter((r) => r.success).length}/{results.results.length} iterations completed successfully</li>
+                  <li>✓ TTFT consistent under 600ms</li>
+                  <li>✓ Token throughput stable</li>
+                </ul>
               </div>
-
-              <div className="bg-[#131a25] border-2 border-[#8b949e] p-6">
-                <h4 className="font-bold mb-4">Evidence & Limitations</h4>
-                <div className="mb-4">
-                  <label className="block font-bold text-[#8b949e] text-sm uppercase mb-1">
-                    Evidence (observed)
-                  </label>
-                  <ul className="list-none p-0 text-[#8b949e]">
-                    <li>✓ {results.results.filter((r) => r.success).length}/{results.results.length} iterations completed successfully</li>
-                    <li>✓ TTFT consistent under 600ms</li>
-                    <li>✓ Token throughput stable</li>
-                  </ul>
-                </div>
-                <div className="mb-4">
-                  <label className="block font-bold text-[#F59E0B] text-sm uppercase mb-1">
-                    Assumptions
-                  </label>
-                  <ul className="list-none p-0 text-[#8b949e]">
-                    <li>⚠ Network latency stable at 20ms</li>
-                    <li>⚠ No queuing delays on cloud endpoint</li>
-                  </ul>
-                </div>
-                <div className="mb-4">
-                  <label className="block font-bold text-[#EF4444] text-sm uppercase mb-1">
-                    Limitations
-                  </label>
-                  <ul className="list-none p-0 text-[#8b949e]">
-                    <li>✕ Max context window 4096 tokens</li>
-                    <li>✕ No batch processing support</li>
-                  </ul>
-                </div>
+              <div className="form-group">
+                <label className="text-warning">Assumptions</label>
+                <ul style={{ listStyle: 'none', padding: 0, color: 'var(--text-secondary)' }}>
+                  <li>⚠ Network latency stable at 20ms</li>
+                  <li>⚠ No queuing delays on cloud endpoint</li>
+                </ul>
               </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-between items-center flex-wrap gap-4">
-              <button className="px-6 py-3 font-bold uppercase border-2 border-[#8b949e] text-[#e6edf3] hover:border-[#e6edf3] transition-colors">
-                EXPORT RUN (JSON)
-              </button>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setCurrentStep(3)}
-                  className="px-6 py-3 font-bold uppercase border-2 border-[#1E3A8A] bg-[#1E3A8A] text-white hover:bg-[#2d4a9a] transition-colors"
-                >
-                  RUN ANOTHER
-                </button>
-                <button
-                  onClick={() => setCurrentStep(1)}
-                  className="px-6 py-3 font-bold uppercase border-2 border-[#EF4444] bg-[#EF4444] text-white hover:bg-[#d63636] transition-colors"
-                >
-                  START OVER
-                </button>
+              <div className="form-group">
+                <label className="text-error">Limitations</label>
+                <ul style={{ listStyle: 'none', padding: 0, color: 'var(--text-secondary)' }}>
+                  <li>✕ Max context window 4096 tokens</li>
+                  <li>✕ No batch processing support</li>
+                </ul>
               </div>
             </div>
           </div>
-        )}
-      </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-between mt-4" style={{ flexWrap: 'wrap', gap: 'var(--sp-2)' }}>
+            <button className="btn btn-secondary" onClick={() => {
+              const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `edgepilot-run-${results.benchmark_id}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}>
+              EXPORT RUN (JSON)
+            </button>
+            <div style={{ display: 'flex', gap: 'var(--sp-2)' }}>
+              <button className="btn btn-primary" onClick={() => setCurrentStep(3)}>
+                RUN ANOTHER
+              </button>
+              <button className="btn btn-danger" onClick={() => setCurrentStep(1)}>
+                START OVER
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
