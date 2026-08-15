@@ -72,6 +72,9 @@ USER node
 # alongside it.
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
+
+# Create public directory and copy if exists
+RUN mkdir -p ./public && chown node:node ./public
 COPY --from=builder --chown=node:node /app/public ./public
 
 # Migrations and the schema travel with the image so an operator can run
