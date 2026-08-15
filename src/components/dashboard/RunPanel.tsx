@@ -11,7 +11,7 @@
  */
 import { useEffect, useId, useRef, useState } from "react";
 
-import benchmarkTasks from "../../../benchmark-tasks.json";
+import benchmarkTasks from "@/data/benchmark-tasks.json";
 import { runBenchmark, type ApiFailure, type BenchmarkRun } from "./api";
 import { fmtElapsed } from "./format";
 import { ErrorState } from "./StateViews";
