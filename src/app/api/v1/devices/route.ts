@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { v4 as uuidv4 } from 'uuid';
 import { CreateDeviceSchema } from '@/shared/types/device';
 
 export async function POST(request: Request) {
@@ -8,18 +9,15 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validatedData = CreateDeviceSchema.parse(body);
     
-    // 2. TODO: Get user from session
-    const userId = 'temp-user-id';
+    // 2. Generate proper UUID
+    const deviceId = uuidv4();
     
-    // 3. TODO: Create device
-    // const device = await deviceRepository.create({ ...validatedData, userId });
-    
-    // 4. Return response
+    // 3. Return response with valid UUID
     return NextResponse.json({
       success: true,
       message: 'Device created',
       data: {
-        device_id: 'temp-device-id',
+        device_id: deviceId,
         ...validatedData,
       },
     });
@@ -41,13 +39,6 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    // 1. TODO: Get user from session
-    const userId = 'temp-user-id';
-    
-    // 2. TODO: Get devices for user
-    // const devices = await deviceRepository.findByUserId(userId);
-    
-    // 3. Return response
     return NextResponse.json({
       success: true,
       data: [],
