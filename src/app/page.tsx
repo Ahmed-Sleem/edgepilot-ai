@@ -10,8 +10,17 @@
  */
 
 import { useRouter } from "next/navigation";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export default function Home() {
+  return (
+    <ErrorBoundary>
+      <HomeContent />
+    </ErrorBoundary>
+  );
+}
+
+function HomeContent() {
   const router = useRouter();
 
   return (

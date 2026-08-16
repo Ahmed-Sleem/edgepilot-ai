@@ -11,6 +11,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Loading } from "@/components/Loading";
 
 // Types
 interface Workload {
@@ -51,6 +53,14 @@ interface BenchmarkResult {
 }
 
 export default function DashboardPage() {
+  return (
+    <ErrorBoundary>
+      <DashboardContent />
+    </ErrorBoundary>
+  );
+}
+
+function DashboardContent() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   
@@ -105,6 +115,8 @@ export default function DashboardPage() {
       const data = await res.json();
       if (data.success) {
         setWorkload(data.data);
+      } else {
+        console.error("Failed to register workload:", data.error);
       }
     } catch (error) {
       console.error("Failed to register workload:", error);
@@ -129,6 +141,8 @@ export default function DashboardPage() {
       const data = await res.json();
       if (data.success) {
         setDevice(data.data);
+      } else {
+        console.error("Failed to register device:", data.error);
       }
     } catch (error) {
       console.error("Failed to register device:", error);

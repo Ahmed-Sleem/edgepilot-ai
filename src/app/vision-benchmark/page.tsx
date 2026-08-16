@@ -9,8 +9,17 @@
  */
 
 import { useRouter } from "next/navigation";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export default function VisionBenchmarkPage() {
+  return (
+    <ErrorBoundary>
+      <VisionBenchmarkContent />
+    </ErrorBoundary>
+  );
+}
+
+function VisionBenchmarkContent() {
   const router = useRouter();
 
   return (
