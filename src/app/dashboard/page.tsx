@@ -180,42 +180,12 @@ function DashboardContent() {
         setResults(data.data);
         setCurrentStep(4);
       } else {
-        // If benchmark fails, create mock results for demo
-        console.error("Benchmark failed:", data.error);
-        const mockResults = {
-          benchmark_id: `demo-${Date.now()}`,
-          status: "completed",
-          results: Array.from({ length: iterations }, (_, i) => ({
-            iteration: i + 1,
-            latency_ms: Math.floor(Math.random() * 2000) + 500,
-            tokens_per_second: Math.floor(Math.random() * 50) + 10,
-            ttft_ms: Math.floor(Math.random() * 500) + 100,
-            success: Math.random() > 0.2,
-          })),
-          readiness_score: Math.floor(Math.random() * 30) + 60,
-          recommendation: "Demo mode - connect API keys for real benchmarks",
-        };
-        setResults(mockResults);
-        setCurrentStep(4);
+        // Show error instead of mock data
+        alert(`Benchmark failed: ${data.error || 'Unknown error'}. Please check your API keys and try again.`);
       }
     } catch (error) {
       console.error("Failed to run benchmark:", error);
-      // Create mock results on error
-      const mockResults = {
-        benchmark_id: `demo-${Date.now()}`,
-        status: "completed",
-        results: Array.from({ length: iterations }, (_, i) => ({
-          iteration: i + 1,
-          latency_ms: Math.floor(Math.random() * 2000) + 500,
-          tokens_per_second: Math.floor(Math.random() * 50) + 10,
-          ttft_ms: Math.floor(Math.random() * 500) + 100,
-          success: Math.random() > 0.2,
-        })),
-        readiness_score: Math.floor(Math.random() * 30) + 60,
-        recommendation: "Demo mode - check API configuration",
-      };
-      setResults(mockResults);
-      setCurrentStep(4);
+      alert("Failed to connect to benchmark API. Please check your connection and try again.");
     } finally {
       clearInterval(timer);
       setIsRunning(false);
@@ -374,7 +344,11 @@ function DashboardContent() {
                 <div className="provider-color ollama"></div>
                 <strong>Ollama</strong><br />
                 <span className="text-secondary" style={{ fontSize: '0.8rem' }}>Local · Privacy High</span>
-                <div><span className="badge badge-success">configured</span></div>
+                <div>
+                  <span className={`badge ${providers.find(p => p.name === 'ollama')?.is_configured ? 'badge-success' : 'badge-error'}`}>
+                    {providers.find(p => p.name === 'ollama')?.is_configured ? 'configured' : 'not configured'}
+                  </span>
+                </div>
               </div>
               {/* Gemini */}
               <div 
@@ -387,7 +361,11 @@ function DashboardContent() {
                 <div className="provider-color gemini"></div>
                 <strong>Gemini</strong><br />
                 <span className="text-secondary" style={{ fontSize: '0.8rem' }}>Cloud · Privacy Medium</span>
-                <div><span className="badge badge-error">not configured</span></div>
+                <div>
+                  <span className={`badge ${providers.find(p => p.name === 'gemini')?.is_configured ? 'badge-success' : 'badge-error'}`}>
+                    {providers.find(p => p.name === 'gemini')?.is_configured ? 'configured' : 'not configured'}
+                  </span>
+                </div>
               </div>
               {/* Groq */}
               <div 
@@ -400,7 +378,11 @@ function DashboardContent() {
                 <div className="provider-color groq"></div>
                 <strong>Groq</strong><br />
                 <span className="text-secondary" style={{ fontSize: '0.8rem' }}>Cloud · Privacy Low</span>
-                <div><span className="badge badge-success">configured</span></div>
+                <div>
+                  <span className={`badge ${providers.find(p => p.name === 'groq')?.is_configured ? 'badge-success' : 'badge-error'}`}>
+                    {providers.find(p => p.name === 'groq')?.is_configured ? 'configured' : 'not configured'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
